@@ -36,7 +36,7 @@ export default function NotificationsScreen() {
   }
 
   return <ScrollView style={s.page} contentContainerStyle={s.content}>
-    <Text style={s.eyebrow}>DEVICE CHECK</Text><Text style={s.title}>경기 전에,\n마음의 준비.</Text>
+    <Text style={s.eyebrow}>DEVICE CHECK</Text><Text style={s.title}>{'경기 전에,\n마음의 준비.'}</Text>
     <Card><Text style={s.heading}>1. 로컬 알림</Text><Text style={s.body}>권한 요청과 알림을 눌렀을 때 경기 화면으로 이동하는 흐름을 확인해요.</Text><Button disabled={busy || !supported} title="5초 뒤 테스트 알림" onPress={() => { void run(false); }} /></Card>
     <Card><Text style={s.heading}>2. 원격 푸시</Text><Text style={s.body}>Expo 프로젝트와 APNs/FCM 자격 증명 설정 후 확인해요. 토큰 발급만으로 수신 성공으로 판단하지 않아요.</Text><Button disabled={busy || !supported} title="이 기기의 푸시 토큰 받기" onPress={() => { void run(true); }} /></Card>
     {!supported ? <Text style={s.body}>화면 미리보기 모드입니다. 알림은 전용 빌드를 설치한 후 확인해주세요.</Text> : null}

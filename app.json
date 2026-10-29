@@ -27,6 +27,17 @@
       "expo-router",
       "expo-notifications"
     ],
-    "scheme": "baseball-mental-poc"
+    "scheme": "baseball-mental-poc",
+    "extra": {
+      "router": {
+        "asyncRoutes": {
+          "web": true
+        }
+      },
+      "eas": {
+        "projectId": "439be45b-06e8-4347-a4cd-95ff5753fe40"
+      }
+    },
+    "owner": "hyeji.kim"
   }
 }

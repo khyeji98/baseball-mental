@@ -6,7 +6,7 @@ import { Button, Card, s } from '../ui';
 export default function Home() {
   return <ScrollView style={s.page} contentContainerStyle={s.content}>
     <Text style={s.eyebrow}>BASEBALL, WITH FEELINGS</Text>
-    <Text style={s.title}>오늘도 야구,\n내 멘탈은 안녕?</Text>
+    <Text style={s.title}>{'오늘도 야구,\n내 멘탈은 안녕?'}</Text>
     <Text style={s.body}>가상 경기로 화면 이동과 멘탈 변화를 체험해보세요. 실제 일정·중계·선수 기록이 아닙니다.</Text>
     {games.map(game => <Card key={game.id}>
       <View style={s.row}><Text style={s.eyebrow}>DEMO · {game.inning}</Text><Text style={s.body}>{game.note}</Text></View>
