@@ -13,7 +13,7 @@
 - 결과 텍스트 공유
 - 로컬 알림 예약, Expo 푸시 토큰 발급, 알림 탭 시 경기 화면 이동
 
-실시간 경기 수집, 회원 인증, 기록 저장, 시즌별 통계는 아직 구현하지 않았습니다.
+모바일과 서버를 함께 관리하는 모노레포입니다. 서버에는 FastAPI·MongoDB 연결, 과거 경기 검증용 저장·조회 API가 있습니다. 운영 서버 배포, 실시간 이벤트 정규화, 회원 인증, 개인 기록·시즌 통계·개인화 푸시 및 앱 API 연결은 아직 미완료입니다.
 
 서버 구성, AWS 비용 비교와 과거 경기 3건의 데이터 접근 검증 결과는 [서버 계획](docs/backend-plan.md)에 정리했습니다. 과거 응답 조회 성공과 실시간 수집 검증은 구분합니다.
 
@@ -48,7 +48,10 @@
 | 구분 | 기술 |
 |---|---|
 | 앱 | React Native 0.88, Expo SDK 58 |
-| 언어 | TypeScript |
+| 언어 | TypeScript / Python 3.13 |
+| 서버 | FastAPI · Beanie · MongoDB |
+| 의존성 | npm workspaces / uv lock |
+| API 계약 | FastAPI에서 생성한 OpenAPI |
 | 화면 이동 | Expo Router |
 | 알림 | expo-notifications |
 | 빌드 | EAS Build |
@@ -69,27 +72,31 @@ npm start         # 개발 빌드용 Metro 실행
 ## 프로젝트 구조
 
 ```text
-src/
-  app/
-    _layout.tsx        # 내비게이션과 알림 진입 처리
-    index.tsx          # 경기 목록
-    game/[id].tsx      # 경기 상세와 멘탈 게이지
-    notifications.tsx  # 알림 테스트
-  domain/game.ts       # 샘플 경기와 지수 계산
-  ui.tsx               # 공통 UI와 스타일
-scripts/
-  domain.test.ts       # 지수 계산 테스트
-  push-test.mjs        # 원격 푸시 발송 및 영수증 조회
+apps/
+  mobile/              # React Native + Expo, EAS 설정과 모바일 테스트
+  server/              # Python + FastAPI, 독립 의존성·Dockerfile
+    app/               # 조회 API, DB 모델과 저장소
+    workers/           # 수동 과거 경기 검증·저장
+    tests/             # API·수집·MongoDB 통합 검증
+contracts/             # 생성된 OpenAPI 명세
+infra/                 # 로컬 API·MongoDB Compose
+docs/                 # 기획·디자인·기술 검증
+.github/workflows/     # 모바일·서버 독립 검증 작업
 ```
+
+[서버 실행 방법](apps/server/README.md) · [API 계약](contracts/README.md) · [인프라 구성](infra/README.md)
+
+서버는 `apps/server`에서 `uv sync --locked` 후 실행합니다. Docker가 있다면 루트에서 `docker compose -f infra/compose.yaml up --build`로 로컬 API와 DB를 함께 실행할 수 있습니다.
 
 ## 빌드 설정
 
 ```sh
+cd apps/mobile
 npx eas-cli@latest login
-npx eas-cli@latest init
+npx eas-cli@latest project:info
 ```
 
-프로젝트 연결 후 `app.json`의 `extra.eas.projectId`를 확인하고, 첫 빌드 전에 iOS `bundleIdentifier`와 Android `package`를 확정합니다.
+기존 EAS 프로젝트 연결은 `apps/mobile/app.json`에 유지합니다. 저장소 이름과 Expo slug는 독립적이므로 Expo slug는 그대로 둡니다. 모든 EAS 명령은 `apps/mobile`에서 실행합니다. 스토어 제출 전 임시 iOS `bundleIdentifier`와 Android `package`를 최종 확인합니다.
 
 | 프로필 | 용도 |
 |---|---|
@@ -138,13 +145,13 @@ npm run push:test
 npm run typecheck
 npm run lint
 npm test
-npx expo export --platform all
+npm run export
 ```
 
-GitHub Actions에서 같은 검사를 실행합니다. 테스트는 상황별 가중치, 중복 이벤트 처리, 기록 정정, 지수 범위 제한을 다룹니다.
+루트 npm 명령은 모바일 workspace에 위임합니다. GitHub Actions는 모바일 검사와 별도로 서버 lint·테스트·실제 MongoDB 통합 검증·스키마 동기화·컨테이너 빌드를 실행합니다. 테스트는 상황별 가중치, 중복 이벤트 처리, 기록 정정, 지수 범위 제한을 다룹니다.
 
 현재 로컬에서 타입 검사·lint·도메인 테스트와 iOS·Android·웹 번들 생성을 확인했습니다.
-네이티브 빌드, 실기기 실행, 원격 푸시 수신은 별도 검증이 필요합니다.
+이전 구조의 Android 내부 배포 빌드는 성공했습니다. 모노레포 전환 후 네이티브 클라우드 빌드·실기기 실행·원격 푸시 수신은 별도 검증이 필요합니다.
 
 ### 알려진 이슈
 

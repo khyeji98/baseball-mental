@@ -1,6 +1,6 @@
 # 서버 구성과 데이터 검증
 
-2026-10-29 기준. 서버는 아직 배포하지 않았다. 앱은 샘플 데이터를 사용한다.
+2026-10-29 기준. 서버는 아직 배포하지 않았다. 앱은 샘플 데이터를 사용한다. 모노레포의 `apps/server`에 FastAPI·MongoDB 연결, 과거 경기 검증용 저장·조회 API, 수동 수집 작업을 구현했다. 운영 자동 수집·정규화·개인 기록은 미완료다. [실행 방법](../apps/server/README.md)을 참고한다.
 
 ## 결정
 
@@ -50,7 +50,8 @@ KBO 공개 일정 페이지의 AJAX 요청 형식을 확인하여 2026년 9월 �
 재현 명령은 경기당 두 요청만 실행한다. 자동 반복·프록시·접근 제한 우회는 포함하지 않는다. 원본 응답은 저장소에 배포하지 않는다.
 
 ```sh
-python3 scripts/probe_kbo.py 20260901LGOB0
+cd apps/server
+uv run python -m workers.probe_kbo 20260901LGOB0
 ```
 
 참고: [KBO 일정](https://www.koreabaseball.com/Schedule/Schedule.aspx), [KBO 이용약관](https://www.koreabaseball.com/Etc/Policy.aspx). 기술적 응답 성공은 서비스에서 재이용할 권리 확보와 별개다.

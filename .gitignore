@@ -46,3 +46,13 @@ yarn-error.*
 google-services.json
 GoogleService-Info.plist
 credentials.json
+
+# Monorepo generated files
+/apps/mobile/ios/
+/apps/mobile/android/
+.venv/
+__pycache__/
+.pytest_cache/
+.ruff_cache/
+*.egg-info/
+.coverage
