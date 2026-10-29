@@ -17,7 +17,8 @@ jobs:
       - run: npm test
       - run: npm run export
   server:
-    runs-on: ubuntu-latest
+    # MongoDB 8 rejects Linux >=6.19 (SERVER-121912); avoid the ubuntu-latest rollover.
+    runs-on: ubuntu-22.04
     defaults:
       run:
         working-directory: apps/server

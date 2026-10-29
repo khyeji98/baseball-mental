@@ -9,7 +9,7 @@ async def connect(settings: Settings):
     if settings.mongodb_uri is None:
         raise ValueError("MONGODB_URI is required")
     client = AsyncMongoClient(
-        settings.mongodb_uri.get_secret_value(), serverSelectionTimeoutMS=3000
+        settings.mongodb_uri.get_secret_value(), serverSelectionTimeoutMS=3000, tz_aware=True
     )
     try:
         await client.admin.command("ping")
